@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <center>
+        <h1>Welcome to the Website!</h1>
+        <h1>Click the Link below to go to the upload form page</h1>
+        <a href="{{ url_for('fileUpload_page') }}">
+            <p>Click me!</p>
+        </a>
+        <br><br>
+        <h3>Your Uploaded Files:</h3>
+        {% if files %}
+        <ul>
+            {% for file in files %}
+            <li>
+                {{ file.filename }}
+                <a href="{{ file.url }}" target="_blank">View</a>
+                <a href="{{ file.url }}" download>Download</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>You have not uploaded any files yet.</p>
+        {% endif %}
+    </center>
+
+</body>
+
+</html>
