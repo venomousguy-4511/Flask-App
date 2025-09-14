@@ -110,7 +110,7 @@ def dashboard():
         return redirect(url_for('login')) 
 
     files_list = Files.query.filter_by(user_id=user_id).all()
-    return render_template("Dashboard.html", files=files_list)
+    return render_template("dashboard.html", files=files_list)
 
 @app.route("/view_file/<filename>")
 def view_file(filename):
