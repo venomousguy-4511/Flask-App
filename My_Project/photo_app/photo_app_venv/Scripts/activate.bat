@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set "VIRTUAL_ENV=C:\Users\Admin\OneDrive\Desktop\Cloud\My_Project\photo_app\photo_app_venv"
+set "VIRTUAL_ENV=C:\Users\Admin\OneDrive\Desktop\Cloud\my_project\photo_app\photo_app_venv"
 
 if not defined PROMPT set PROMPT=$P$G
 

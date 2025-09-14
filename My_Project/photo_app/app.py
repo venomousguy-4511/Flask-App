@@ -6,22 +6,23 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from dotenv import load_dotenv
-load_dotenv() 
+
+# --- App Configuration ---
+load_dotenv()
 app = Flask(__name__)
 # 🚩 Using a secure key for sessions
-app.config['SECRET_KEY'] = 'your_very_secure_key_here' 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///site.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
-# 🚩 Cloudinary Configuration
+# 🚩 Fix: Cloudinary Configuration - using correct variable names
 cloudinary.config(
-    cloud_name = "doscdoybh",
-    api_key = "343569563597821",
-    api_secret = os.environ.get('CLOUDINARY_API_SECRET')
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
 
-# 🚩 Upload folder is now for serving old files, not for new uploads
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -41,8 +42,8 @@ def login():
         if not Username1 or not Password1:
             return "Fields should not remain empty"
         user = User.query.filter_by(username=Username1).first()
+        # 🚩 Fix: Indentation is now correct
         if user and user.password == Password1:
-            # 🚩 Storing user ID in session after successful login
             session['user_id'] = user.id
             return redirect(url_for("dashboard"))
         else:
@@ -76,10 +77,6 @@ def submit():
 def fileUpload_page():
     return render_template("Upload_form.html")
 
-# Yeh aapki 'file_Upload' function mein aayega
-from flask import session
-
-# Yeh code aapke 'file_Upload' function mein aayega
 @app.route("/upload_file", methods=["POST", "GET"])
 def file_Upload():
     if request.method == "POST":
@@ -96,34 +93,30 @@ def file_Upload():
             public_id = result.get('public_id')
             file_url = result.get('secure_url')
             
-            # 🚩 Saving the Cloudinary URL to the database
             new_file = Files(filename=public_id, url=file_url, user_id=user_id) 
             db.session.add(new_file)
             db.session.commit()
             
-            return f"File uploaded to Cloudinary! Public ID: {public_id}"
+            return redirect(url_for('dashboard'))
 
         except Exception as e:
             return f"An error occurred: {e}"
             
     return render_template("Upload_form.html")
+
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
-    # 🚩 Filtering files based on the logged-in user
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login')) 
 
-    # Only show files for the logged-in user
     files_list = Files.query.filter_by(user_id=user_id).all()
     return render_template("Dashboard.html", files=files_list)
 
-# 🚩 New route for viewing files
 @app.route("/view_file/<filename>")
 def view_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# 🚩 New route for downloading files
 @app.route("/download_file/<filename>")
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
